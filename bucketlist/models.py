@@ -1,0 +1,97 @@
+from datetime import datetime
+
+from bucketlist import db
+from config import Config
+
+class User(db.Model):
+    """This class represents the user table"""
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+    date_modified = db.Column(
+        db.DateTime, default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp())
+    bucketlists = db.relationship('Bucketlist', backref='user',
+                                  cascade="all,delete")
+
+    def __init__(self, name):
+        self.name = name
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return User.query.all()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<User: {}>".format(self.name)
+
+
+class Bucketlist(db.Model):
+    """This class represents the bucketlist table.""" 
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+    date_modified = db.Column(
+        db.DateTime, default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    items = db.relationship('BucketListItems', backref='bucketlist',
+                            cascade="all,delete")
+
+    def __init__(self, name):
+        """initialize with name."""
+        self.name = name
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return Bucketlist.query.all()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<Bucketlist: {}>".format(self.name)
+
+
+class BucketListItems(db.Model):
+    """This class represents the items in the bucketlists"""
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+    date_modified = db.Column(
+        db.DateTime, default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp())
+    bucketlist_id = db.Column(db.Integer, db.ForeignKey('bucketlist.id'))
+
+    def __init__(self, name):
+        self.arg = name
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return BucketlistItems.query.all()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<Bucketlist Item: {}>".format(self.name)
