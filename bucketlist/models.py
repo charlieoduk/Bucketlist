@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from bucketlist import db
-from config import Config
+
 
 class User(db.Model):
     """This class represents the user table"""
@@ -35,7 +35,7 @@ class User(db.Model):
 
 
 class Bucketlist(db.Model):
-    """This class represents the bucketlist table.""" 
+    """This class represents the bucketlist table."""
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
@@ -87,7 +87,7 @@ class BucketListItems(db.Model):
 
     @staticmethod
     def get_all():
-        return BucketlistItems.query.all()
+        return BucketListItems.query.all()
 
     def delete(self):
         db.session.delete(self)
