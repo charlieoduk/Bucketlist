@@ -6,8 +6,8 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 
 
-from bucketlist import db
 from .config import Config
+from .config import db
 
 kenyan_time = pytz.timezone('Africa/Nairobi')
 
@@ -17,6 +17,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32))
+    email = db.Column(db.String(68))
     password_hash = db.Column(db.String(68))
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(
@@ -25,8 +26,10 @@ class User(db.Model):
     bucketlists = db.relationship('Bucketlist', backref='user',
                                   cascade="all,delete")
 
-    def __init__(self, name):
+    def __init__(self, name, email, password):
         self.name = name
+        self.email = email
+        self.password_hash = self.hash_password(password)
 
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
@@ -75,13 +78,14 @@ class Bucketlist(db.Model):
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     items = db.relationship('BucketListItems', backref='bucketlist',
                             cascade="all,delete")
 
-    def __init__(self, name):
+    def __init__(self, name, created_by):
         """initialize with name."""
         self.name = name
+        self.created_by = created_by
 
     def save(self):
         db.session.add(self)
@@ -96,7 +100,7 @@ class Bucketlist(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return "<Bucketlist: {}>".format(self.name)
+        return "{}".format(self.name)
 
 
 class BucketListItems(db.Model):
@@ -108,10 +112,13 @@ class BucketListItems(db.Model):
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
+    achieved = db.Column(db.Boolean, default=False)
     bucketlist_id = db.Column(db.Integer, db.ForeignKey('bucketlist.id'))
 
-    def __init__(self, name):
-        self.arg = name
+    def __init__(self, name, achieved, bucketlist_id):
+        self.name = name
+        self.achieved = achieved
+        self.bucketlist_id = bucketlist_id
 
     def save(self):
         db.session.add(self)
