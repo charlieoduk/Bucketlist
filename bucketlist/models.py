@@ -7,7 +7,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 
 
 from .config import Config
-from .config import db
+from bucketlist import db
 
 kenyan_time = pytz.timezone('Africa/Nairobi')
 
@@ -18,7 +18,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32))
     email = db.Column(db.String(68))
-    password_hash = db.Column(db.String(68))
+    password_hash = db.Column(db.String(255))
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(
         db.DateTime, default=datetime.now(kenyan_time),
