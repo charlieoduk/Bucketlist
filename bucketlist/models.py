@@ -37,13 +37,13 @@ class User(db.Model):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
-    def generate_auth_token(self, expiration=600):
-        s = Serializer(Config['SECRET_KEY'], expires_in=expiration)
+    def generate_auth_token(self, expiration=3600):
+        s = Serializer(Config.SECRET, expires_in=expiration)
         return s.dumps({'id': self.id})
 
     @staticmethod
     def verify_auth_token(token):
-        s = Serializer(Config['SECRET_KEY'])
+        s = Serializer(Config.SECRET)
         try:
             data = s.loads(token)
         except SignatureExpired:
@@ -79,7 +79,7 @@ class Bucketlist(db.Model):
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'))
-    items = db.relationship('BucketListItems', backref='bucketlist',
+    items = db.relationship('Item', backref='bucketlist',
                             cascade="all,delete")
 
     def __init__(self, name, created_by):
@@ -134,3 +134,28 @@ class BucketListItems(db.Model):
 
     def __repr__(self):
         return "<Bucketlist Item: {}>".format(self.name)
+
+
+class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
+    done = db.Column(db.Boolean, default=False)
+    date_modified = db.Column(db.DateTime, default=datetime.now(
+        kenyan_time), onupdate=datetime.now(kenyan_time))
+    date_created = db.Column(db.DateTime, default=datetime.now(kenyan_time))
+    bucketlist_id = db.Column(db.Integer, db.ForeignKey(
+        'bucketlist.id'), nullable=False)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<Item %r>' % self.name
+
+    def __str__(self):
+        return '{0}'.format(self.name)
