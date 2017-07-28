@@ -1,8 +1,9 @@
 from flask import request, g
-from flask_restful import Resource
+from flask_restplus import Resource
 
 # local import
 from bucketlist.models import User
+from bucketlist import db
 
 
 class CreateUser(Resource):
@@ -19,12 +20,22 @@ class CreateUser(Resource):
         email = arguments['email']
         password = arguments['password']
 
-        new_user = User(
-            name=name, password=password, email=email)
-        new_user.hash_password(password)
-        new_user.save()
-        # return a success message
-        return {'message': 'Successfully added a user'}, 201
+        users = db.session.query(User).all()
+        registered_emails = []
+
+        for user in users:
+            registered_emails.append(user.email)
+
+        if email not in registered_emails:
+
+            new_user = User(
+                name=name, password=password, email=email)
+            new_user.hash_password(password)
+            new_user.save()
+            # return a success message
+            return {'message': 'Successfully added a user'}, 201
+
+        return {'message': 'Failed!! User already exists'}
 
 
 class LogUserIn(Resource):
@@ -36,11 +47,10 @@ class LogUserIn(Resource):
         password = arguments['password']
 
         user = User.query.filter_by(email=email).first()
-
-        if not user or not user.verify_password(password):
+        if not user or not user.verify_password(password=password):
             return {'message': 'User does not exist or incorrect password'}
-        g.user = user
-
+        token = user.generate_auth_token()
         return {
             'message': 'Successfully logged in',
+            'token': token.decode('utf-8'),
         }
