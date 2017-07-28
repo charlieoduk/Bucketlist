@@ -19,6 +19,7 @@ class TestingConfig(Config):
     """Configurations for Testing, with a separate test database."""
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist_test'
+    PRESERVE_CONTEXT_ON_EXCEPTION = False
     DEBUG = True
 
 
