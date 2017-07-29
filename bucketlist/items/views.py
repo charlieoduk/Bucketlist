@@ -1,9 +1,18 @@
 from flask import request, jsonify
-from flask_restplus import Resource
+from flask_restplus import Resource, fields, marshal_with
 from sqlalchemy import desc
 
 # local import
+from bucketlist import db
 from bucketlist.models import Bucketlist, Item, User
+
+item_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'date_created': fields.DateTime(attribute='date_created'),
+    'date_modified': fields.DateTime(attribute='date_modified'),
+    'done': fields.Boolean
+}
 
 
 class ItemsResource(Resource):
@@ -18,10 +27,10 @@ class ItemsResource(Resource):
             arguments = request.get_json(force=True)
             name = arguments.get('name')
 
-            bucketlist = Bucketlist.query.filter_by(
-                created_by=current_user.id, id=bucketlist_id).first()
+            bucketlist = db.session.query(Bucketlist).filter_by(
+                created_by=current_user.id, id=bucketlist_id)
             if bucketlist:
-                item = Item(name=name, bucketlist_id=bucketlist.id)
+                item = Item(name=name, bucketlist_id=bucketlist_id)
                 item.save()
 
                 return {'message': 'Item successfully added to bucketlist'}
