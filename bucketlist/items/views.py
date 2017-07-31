@@ -1,6 +1,5 @@
-from flask import request, jsonify
-from flask_restplus import Resource, fields, marshal_with
-from sqlalchemy import desc
+from flask import request
+from flask_restplus import Resource, fields, abort
 
 # local import
 from bucketlist import db
@@ -22,7 +21,7 @@ class ItemsResource(Resource):
         if token:
             current_user = User.verify_auth_token(token)
         else:
-            return {'message': 'Unauthorized Access!'}
+            abort(message='Unauthorized Access!')
         if current_user:
             arguments = request.get_json(force=True)
             name = arguments.get('name')
@@ -33,11 +32,12 @@ class ItemsResource(Resource):
                 item = Item(name=name, bucketlist_id=bucketlist_id)
                 item.save()
 
-                return {'message': 'Item successfully added to bucketlist'}
+                response = {'message': 'Item successfully added to bucketlist'}
+                return response
             else:
-                return {'message': 'Bucketlist not found'}
+                abort(message='Bucketlist not found')
         else:
-            return {'message': 'Expired or invalid token'}
+            abort(message='Expired or invalid token')
 
 
 class ItemsList(Resource):
@@ -47,27 +47,28 @@ class ItemsList(Resource):
         if token:
             current_user = User.verify_auth_token(token)
         else:
-            return {'message': 'Unauthorized Access!'}
+            abort(message='Unauthorized Access!!')
         if current_user:
             arguments = request.get_json(force=True)
-            name, done = arguments.get('name') or None, arguments.get('done')
+            name, done = arguments.get('name'), arguments.get('done')
 
             bucketlist = Bucketlist.query.filter_by(
-                id=bucketlist_id).first()
+                created_by=current_user.id, id=bucketlist_id).first()
 
             if bucketlist:
                 item = Item.query.filter_by(
-                    id=item_id, bucketlist=bucketlist).first()
+                    id=item_id, bucketlist_id=bucketlist_id).first()
                 if item:
                     item.name = name if name is not None else item.name
                     item.done = done if done is not None else item.done
                     item.save()
+                    return {'message':'Successfully updated the item'}
                 else:
-                    {'message': 'Item not found'}
+                    abort(message='Item not found')
             else:
-                return {'message': 'Bucketlist not found'}
+                abort(message='Bucketlist not found')
         else:
-            return {'message': 'Expired or invalid token'}
+            abort(message='Expired or invalid token')
 
     def delete(self, bucketlist_id, item_id):
         token = request.headers.get('Authorization')
@@ -77,15 +78,16 @@ class ItemsList(Resource):
             return {'message': 'Unauthorized Access!'}
         if current_user:
             bucketlist = Bucketlist.query.filter_by(
-                id=bucketlist_id).first()
+                created_by=current_user.id, id=bucketlist_id).first()
 
             if bucketlist:
                 item = Item.query.filter_by(
-                    id=item_id, bucketlist=bucketlist).first()
+                    id=item_id, bucketlist_id=bucketlist_id).first()
                 if item:
                     item.delete()
-                    return {'message': 'Successfully deleted Item'}
+                    response = {'message': 'Successfully deleted Item'}
+                    return response, 200
                 else:
-                    {'message': 'Item not found'}
+                    abort(message='Item not found')
         else:
-            return {'message': 'Expired or invalid token'}
+            abort(message='Expired or invalid token')
