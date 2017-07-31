@@ -1,7 +1,6 @@
 import json
 import unittest
 
-from bucketlist.models import User
 from tests.base import BaseTestCase as base
 
 
