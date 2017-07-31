@@ -13,7 +13,7 @@ install: "pip install -r requirements.txt"
 env:
   - FLASK_APP="manage.py"
   - SECRET="YALIYOPITA-SI-NDWELE-TUGANGE-YAJAYO"
-  - APP_SETTINGS="testing"
+  - APP_SETTINGS="development"
 # command to run tests
 script: python manage.py test
 after_success:
