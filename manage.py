@@ -9,10 +9,11 @@ from bucketlist import app, db, models
 
 COV = coverage.coverage(
     branch=True,
-    include='project/*',
+    include='bucketlist/*',
     omit=[
         'tests/*',
         'bucketlist/config.py',
+        'bucketlist/models.py',
         'bucketlist/*/__init__.py'
     ]
 )
