@@ -1,8 +1,7 @@
 services:
   - postgresql
  notifications:
-    slack: andela:eROs9w0H9iaQ7D2XC9jl4d5W
-
+    travis encrypt "andela:7AgcICydnCCaIALOas7uMHuR" --add notifications.slack
 before_script:
   - psql -c 'create database bucketlist_test;' -U postgres
 language: python
