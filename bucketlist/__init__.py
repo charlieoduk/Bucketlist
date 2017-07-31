@@ -40,7 +40,7 @@ def create_app(config_name):
     app.register_blueprint(items_blueprint, url_prefix='/api/v1.0')
     from bucketlist.items.views import ItemsResource, ItemsList
     api.add_resource(ItemsResource, '/bucketlists/<int:bucketlist_id>/items/')
-    api.add_resource(ItemsList, '/bucketlists/<id>/items/<item_id>')
+    api.add_resource(ItemsList, '/bucketlists/<int:bucketlist_id>/items/<int:item_id>/')
 
     return app
 
