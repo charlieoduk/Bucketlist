@@ -1,7 +1,6 @@
 services:
   - postgresql
- notifications:
-    travis encrypt "andela:7AgcICydnCCaIALOas7uMHuR" --add notifications.slack
+
 before_script:
   - psql -c 'create database bucketlist_test;' -U postgres
 language: python
@@ -17,3 +16,6 @@ install:
 script: python manage.py cov
 after_success:
   coveralls
+
+notifications:
+    slack: andela:7AgcICydnCCaIALOas7uMHuR
