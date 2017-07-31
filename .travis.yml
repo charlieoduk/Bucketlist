@@ -1,5 +1,7 @@
 services:
   - postgresql
+ notifications:
+    slack: andela:eROs9w0H9iaQ7D2XC9jl4d5W
 
 before_script:
   - psql -c 'create database bucketlist_test;' -U postgres
