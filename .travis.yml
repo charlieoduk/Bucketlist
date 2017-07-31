@@ -1,3 +1,8 @@
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'create database bucketlist_test;' -U postgres
 language: python
 python:
 
@@ -5,6 +10,10 @@ python:
   - "3.6"
 # command to install dependencies
 install: "pip install -r requirements.txt"
+env:
+  - FLASK_APP="manage.py"
+  - SECRET="YALIYOPITA-SI-NDWELE-TUGANGE-YAJAYO"
+  - APP_SETTINGS="testing"
 # command to run tests
 script: python manage.py test
 after_success:
