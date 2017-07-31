@@ -87,16 +87,15 @@ class BucketListResource(Resource):
         else:
             abort(400, message='Unauthorized Access!')
 
-        if not isinstance(current_user,User):
+        if not isinstance(current_user, User):
             abort(401, current_user)
 
         # get arguments
 
-        # arguments = parser.parse_args(request)
-        # q = arguments.get("q")
-        # limit = arguments.get("limit")
-        # page = arguments.get("page")
-
+        arguments = parser.parse_args(request)
+        q = arguments.get("q")
+        limit = arguments.get("limit")
+        page = arguments.get("page")
 
         bucketlists = db.session.query(
             Bucketlist).filter_by(created_by=current_user.id).all()
@@ -108,7 +107,6 @@ class BucketListResource(Resource):
         abort(
             400, message='Bucketlist not found or does not belong to you.'
         )
-
 
     def post(self):
         '''Adds a new bucketlist'''
@@ -122,7 +120,7 @@ class BucketListResource(Resource):
             try:
                 name = arguments['name']
             except:
-                return {'message':'Invalid parameter entered'}
+                return {'message': 'Invalid parameter entered'}
             bucketlists = db.session.query(Bucketlist).all()
             current_bucketlists = []
 
