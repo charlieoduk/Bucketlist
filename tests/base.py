@@ -49,7 +49,7 @@ class BaseTestCase(TestCase):
             '/api/v1.0/bucketlists/',
             data=json.dumps(dict(
                 name="new bucketlist",
-            )),headers={'Authorization' : user_token},
+            )), headers={'Authorization': user_token},
         )
         return user_token
 
@@ -59,7 +59,7 @@ class BaseTestCase(TestCase):
             '/api/v1.0/bucketlists/',
             data=json.dumps(dict(
                 name="Second bucketlist",
-            )),headers={'Authorization' : user_token},
+            )), headers={'Authorization': user_token},
         )
         return user_token
 
@@ -70,11 +70,10 @@ class BaseTestCase(TestCase):
             '/api/v1.0/bucketlists/1/items/',
             data=json.dumps(dict(
                 name="Bungee jump",
-            )),headers={'Authorization' : user_token},
+            )), headers={'Authorization': user_token},
         )
 
         return user_token
-
 
     def setUp(self):
         db.create_all()

@@ -18,18 +18,18 @@ class TestAddBucketlist(base):
         data = json.loads(response.data.decode())
         self.assertEqual(data['message'], 'Unauthorized Access!')
 
-
     def test_add_new_bucketlist(self):
         user_token = base.base_authentication(self)
         response = self.client.post(
             '/api/v1.0/bucketlists/',
             data=json.dumps(dict(
                 name="new bucketlist",
-            )),headers={'Authorization' : user_token},
+            )), headers={'Authorization': user_token},
         )
 
         data = json.loads(response.data.decode())
-        self.assertEqual(data['message'], 'successfully added a new bucketlist')
+        self.assertEqual(
+            data['message'], 'successfully added a new bucketlist')
 
     def test_add_existing_bucketlist(self):
         user_token = base.base_add_bucketlist(self)
@@ -38,7 +38,7 @@ class TestAddBucketlist(base):
             '/api/v1.0/bucketlists/',
             data=json.dumps(dict(
                 name="new bucketlist",
-            )),headers={'Authorization' : user_token},
+            )), headers={'Authorization': user_token},
         )
         data = json.loads(response.data.decode())
         self.assertEqual(data['message'], 'bucketlist already exists')
@@ -49,7 +49,7 @@ class TestAddBucketlist(base):
             '/api/v1.0/bucketlists/',
             data=json.dumps(dict(
                 name="",
-            )),headers={'Authorization' : user_token},
+            )), headers={'Authorization': user_token},
         )
 
         data = json.loads(response.data.decode())
@@ -61,7 +61,7 @@ class TestAddBucketlist(base):
             '/api/v1.0/bucketlists/',
             data=json.dumps(dict(
                 email="new@gmail.com"
-            )),headers={'Authorization' : user_token},
+            )), headers={'Authorization': user_token},
         )
 
         data = json.loads(response.data.decode())
@@ -73,7 +73,7 @@ class TestAddBucketlist(base):
 
         response = self.client.get(
             '/api/v1.0/bucketlists/',
-            headers={'Authorization' : user_token},
+            headers={'Authorization': user_token},
         )
         self.assertIn('new bucketlist', str(response.data))
         self.assertIn('Second bucketlist', str(response.data))
@@ -84,7 +84,7 @@ class TestAddBucketlist(base):
 
         response = self.client.get(
             '/api/v1.0/bucketlists/1/',
-            headers={'Authorization' : user_token},
+            headers={'Authorization': user_token},
         )
         self.assertIn('new bucketlist', str(response.data))
 
@@ -96,15 +96,16 @@ class TestAddBucketlist(base):
             data=json.dumps(dict(
                 name="revised bucketlist"
             )),
-            headers={'Authorization' : user_token},
+            headers={'Authorization': user_token},
         )
         bucketlist = self.client.get(
             '/api/v1.0/bucketlists/1/',
-            headers={'Authorization' : user_token},
+            headers={'Authorization': user_token},
         )
 
         data = json.loads(response.data.decode())
-        self.assertEqual(data['message'], 'Successfully updated the bucketlist')
+        self.assertEqual(
+            data['message'], 'Successfully updated the bucketlist')
         self.assertIn('revised bucketlist', str(bucketlist.data))
 
     def test_delete_bucketlist(self):
@@ -112,26 +113,17 @@ class TestAddBucketlist(base):
 
         response = self.client.delete(
             '/api/v1.0/bucketlists/1/',
-            headers={'Authorization' : user_token},
+            headers={'Authorization': user_token},
         )
         bucketlist = self.client.get(
             '/api/v1.0/bucketlists/1/',
-            headers={'Authorization' : user_token},
+            headers={'Authorization': user_token},
         )
 
         data = json.loads(response.data.decode())
         self.assertEqual(data['message'], 'Bucketlist successfully deleted')
         self.assertNotIn('new bucketlist', str(bucketlist.data))
 
-        
 
-
-
-
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    unittest.main()

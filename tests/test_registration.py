@@ -25,6 +25,19 @@ class TestAuthBlueprint(base):
         self.assertEqual(response.status_code, 200)
         user.delete()
 
+    def test_register_without_name(self):
+        response = self.client.post(
+            '/api/v1.0/auth/register/',
+            data=json.dumps(dict(
+                name='',
+                email='joe@gmail.com',
+                password='password'
+            )),
+            content_type='application/json',
+        )
+        data = json.loads(response.data.decode())
+        self.assertTrue(data['message'] == 'Missing required parameters.')
+
 
 if __name__ == '__main__':
     unittest.main()
