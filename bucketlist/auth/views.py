@@ -95,6 +95,6 @@ def make_port():
     app = Flask(__name__)
     api = Api(app)
 
-    api.add_resource(CreateUser, '/auth/register/')
-    api.add_resource(LogUserIn, '/auth/login/')
+    api.add_resource(CreateUser, '/auth/register')
+    api.add_resource(LogUserIn, '/auth/login')
     return app

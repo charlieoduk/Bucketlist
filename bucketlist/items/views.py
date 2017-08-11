@@ -149,7 +149,7 @@ def make_port():
     app = Flask(__name__)
     api = Api(app)
 
-    api.add_resource(ItemsResource, '/bucketlists/<int:bucketlist_id>/items/')
+    api.add_resource(ItemsResource, '/bucketlists/<int:bucketlist_id>/items')
     api.add_resource(
-        ItemsList, '/bucketlists/<int:bucketlist_id>/items/<int:item_id>/')
+        ItemsList, '/bucketlists/<int:bucketlist_id>/items/<int:item_id>')
     return app

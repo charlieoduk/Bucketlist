@@ -112,17 +112,19 @@ class BucketListResource(Resource):
         page = arguments.get("page")
 
         if q:
-            bucketlists = db.session.query(
-                Bucketlist.name.ilike('%' + q + '%')).filter_by(
-                created_by=current_user.id).paginate(
+            bucketlists = Bucketlist.query.filter(
+                Bucketlist.name.ilike(
+                    '%' + q + '%'),
+                Bucketlist.created_by == current_user.id).paginate(
                 page, limit, False)
         else:
-            bucketlists = db.session.query(
-                Bucketlist).filter_by(created_by=current_user.id).all()
+            bucketlists = Bucketlist.query.filter_by(
+                created_by=current_user.id).paginate(
+                page, limit, False)
 
-        if bucketlists:
+        if bucketlists.items:
             # return marshal(bucketlists)
-            return marshal(bucketlists, bucketlist_fields)
+            return bucketlists.items
         abort(
             400, message='Bucketlists not found'
         )
@@ -160,7 +162,8 @@ class BucketListResource(Resource):
                 name = arguments['name']
             except:
                 return {'message': 'Invalid parameter entered'}
-            bucketlists = db.session.query(Bucketlist).all()
+            bucketlists = Bucketlist.query.filter_by(
+                created_by=current_user.id)
             current_bucketlists = []
 
             if not name:
@@ -233,7 +236,8 @@ class BucketListItemsResource(Resource):
             abort(400, message='Unauthorized Access!')
         if current_user:
             bucketlistitem = db.session.query(
-                Bucketlist).filter_by(created_by=current_user.id, id=bucketlist_id).first()
+                Bucketlist).filter_by(
+                created_by=current_user.id, id=bucketlist_id).first()
             if not bucketlistitem:
                 abort(404, message='Bucketlist not found')
             else:
@@ -314,7 +318,7 @@ def make_port():
     app = Flask(__name__)
     api = Api(app)
 
-    api.add_resource(BucketListResource, '/bucketlists/',)
+    api.add_resource(BucketListResource, '/bucketlists',)
     api.add_resource(BucketListItemsResource,
-                     '/bucketlists/<int:bucketlist_id>/')
+                     '/bucketlists/<int:bucketlist_id>')
     return app
