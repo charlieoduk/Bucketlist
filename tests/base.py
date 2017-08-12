@@ -1,4 +1,5 @@
 import json
+
 from flask_testing import TestCase
 
 from bucketlist import app, db
@@ -51,7 +52,6 @@ class BaseTestCase(TestCase):
                 name="new bucketlist",
             )), headers={'Authorization': user_token},
         )
-        return user_token
 
     def base_add_bucketlist2(self):
         user_token = self.base_authentication()
@@ -61,10 +61,10 @@ class BaseTestCase(TestCase):
                 name="Second bucketlist",
             )), headers={'Authorization': user_token},
         )
-        return user_token
 
     def base_add_item(self):
-        user_token = self.base_add_bucketlist()
+        user_token = self.base_authentication()
+        self.base_add_bucketlist()
 
         self.client.post(
             '/api/v1.0/bucketlists/1/items/',
@@ -72,8 +72,6 @@ class BaseTestCase(TestCase):
                 name="Bungee jump",
             )), headers={'Authorization': user_token},
         )
-
-        return user_token
 
     def setUp(self):
         db.create_all()

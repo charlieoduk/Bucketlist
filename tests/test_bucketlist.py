@@ -32,7 +32,8 @@ class TestAddBucketlist(base):
             data['message'], 'successfully added a new bucketlist')
 
     def test_add_existing_bucketlist(self):
-        user_token = base.base_add_bucketlist(self)
+        user_token = base.base_authentication(self)
+        base.base_add_bucketlist(self)
 
         response = self.client.post(
             '/api/v1.0/bucketlists/',
@@ -68,8 +69,9 @@ class TestAddBucketlist(base):
         self.assertEqual(data['message'], 'Invalid parameter entered')
 
     def test_get_all_bucketlists(self):
+        user_token = base.base_authentication(self)
         base.base_add_bucketlist(self)
-        user_token = base.base_add_bucketlist2(self)
+        base.base_add_bucketlist2(self)
 
         response = self.client.get(
             '/api/v1.0/bucketlists/',
@@ -79,8 +81,8 @@ class TestAddBucketlist(base):
         self.assertIn('Second bucketlist', str(response.data))
 
     def test_get_bucketlist_by_id(self):
+        user_token = base.base_authentication(self)
         base.base_add_bucketlist(self)
-        user_token = base.base_add_bucketlist2(self)
 
         response = self.client.get(
             '/api/v1.0/bucketlists/1/',
@@ -89,7 +91,8 @@ class TestAddBucketlist(base):
         self.assertIn('new bucketlist', str(response.data))
 
     def test_update_bucketlist(self):
-        user_token = base.base_add_bucketlist(self)
+        user_token = base.base_authentication(self)
+        base.base_add_bucketlist(self)
 
         response = self.client.put(
             '/api/v1.0/bucketlists/1/',
@@ -98,31 +101,22 @@ class TestAddBucketlist(base):
             )),
             headers={'Authorization': user_token},
         )
-        bucketlist = self.client.get(
-            '/api/v1.0/bucketlists/1/',
-            headers={'Authorization': user_token},
-        )
 
         data = json.loads(response.data.decode())
         self.assertEqual(
             data['message'], 'Successfully updated the bucketlist')
-        self.assertIn('revised bucketlist', str(bucketlist.data))
 
     def test_delete_bucketlist(self):
-        user_token = base.base_add_bucketlist(self)
+        user_token = base.base_authentication(self)
+        base.base_add_bucketlist(self)
 
         response = self.client.delete(
-            '/api/v1.0/bucketlists/1/',
-            headers={'Authorization': user_token},
-        )
-        bucketlist = self.client.get(
             '/api/v1.0/bucketlists/1/',
             headers={'Authorization': user_token},
         )
 
         data = json.loads(response.data.decode())
         self.assertEqual(data['message'], 'Bucketlist successfully deleted')
-        self.assertNotIn('new bucketlist', str(bucketlist.data))
 
 
 if __name__ == '__main__':
