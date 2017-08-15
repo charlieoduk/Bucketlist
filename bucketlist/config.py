@@ -6,19 +6,22 @@ class Config(object):
     DEBUG = False
     CSRF_ENABLED = True
     SECRET = os.getenv('SECRET')
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist'
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL') or 'postgresql://localhost/bucketlist'
 
 
 class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist'
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL') or 'postgresql://localhost/bucketlist'
 
 
 class TestingConfig(Config):
     """Configurations for Testing, with a separate test database."""
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist_test'
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL') or 'postgresql://localhost/bucketlist_test'
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     DEBUG = True
 
