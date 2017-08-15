@@ -1,4 +1,5 @@
 import unittest
+import os
 
 from flask_testing import TestCase
 
@@ -15,7 +16,8 @@ class TestDevelopmentConfig(TestCase):
         self.assertTrue(app.config['DEBUG'])
         self.assertTrue(
             app.config[
-                'SQLALCHEMY_DATABASE_URI'] == 'postgresql://localhost/bucketlist'
+                'SQLALCHEMY_DATABASE_URI'] == os.environ.get(
+                'DATABASE_URL') or 'postgresql://localhost/bucketlist'
         )
 
 
@@ -29,7 +31,8 @@ class TestTestingConfig(TestCase):
         self.assertTrue(app.config['DEBUG'])
         self.assertTrue(
             app.config[
-                'SQLALCHEMY_DATABASE_URI'] == 'postgresql://localhost/bucketlist_test'
+                'SQLALCHEMY_DATABASE_URI'] == os.environ.get(
+                'DATABASE_URL') or 'postgresql://localhost/bucketlist'
         )
 
 
