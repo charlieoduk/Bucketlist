@@ -39,4 +39,4 @@ sphinxcontrib-httpdomain==1.5.0
 sphinxcontrib-websupport==1.0.1
 SQLAlchemy==1.1.12
 urllib3==1.22
-Werkzeug==0.12.2
+Werkzeug==0.15.3
